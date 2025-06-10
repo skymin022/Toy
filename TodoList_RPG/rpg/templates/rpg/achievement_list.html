@@ -1,0 +1,22 @@
+
+    {% extends "base.html" %}
+    {% block content %}
+    <h2>나의 업적/칭호</h2>
+    <ul>
+        {% for achievement in achievements %}
+        <li>
+            <strong>{{ achievement.name }}</strong>
+            {% if achievement.achieved %}
+            <span style="color:green;">[달성]</span>
+            <small>{{ achievement.date_achieved|date:"Y-m-d" }}</small>
+            {% else %}
+            <span style="color:gray;">[미달성]</span>
+            {% endif %}
+            <p>{{ achievement.description }}</p>
+        </li>
+        {% empty %}
+        <li>업적이 없습니다.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'stat_view' %}">스탯 보기</a>
+    {% endblock %}

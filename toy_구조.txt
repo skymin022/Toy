@@ -1,0 +1,349 @@
+TodoList_RPG 내부 
+rpg, todolist, todolist_rpg
+
+rpg/model.spy
+from django.db import models
+from django.contrib.auth.models import User
+
+class Stat(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    study = models.IntegerField(default=0)
+    exercise = models.IntegerField(default=0)
+    stamina = models.IntegerField(default=0)
+    appearance = models.IntegerField(default=0)
+    wealth = models.IntegerField(default=0)
+    exp = models.IntegerField(default=0)
+    level = models.IntegerField(default=1)
+
+class Achievement(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    achieved = models.BooleanField(default=False)
+    date_achieved = models.DateTimeField(null=True, blank=True)
+
+rpg/urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('stats/', views.stat_view, name='stat_view'),
+    path('achievements/', views.achievement_list, name='achievement_list'),
+]
+
+rpg/views.py
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Stat, Achievement
+
+@login_required
+def stat_view(request):
+    stat, _ = Stat.objects.get_or_create(user=request.user)
+    return render(request, 'rpg/stat_view.html', {'stat': stat})
+
+@login_required
+def achievement_list(request):
+    achievements = Achievement.objects.filter(user=request.user)
+    return render(request, 'rpg/achievement_list.html', {'achievements': achievements})
+
+rpg/templates/rpg/achievement_list.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>achievement_list</title>
+</head>
+<body>
+
+    {% extends "base.html" %}
+    {% block content %}
+    <h2>나의 업적/칭호</h2>
+    <ul>
+        {% for achievement in achievements %}
+        <li>
+            <strong>{{ achievement.name }}</strong>
+            {% if achievement.achieved %}
+            <span style="color:green;">[달성]</span>
+            <small>{{ achievement.date_achieved|date:"Y-m-d" }}</small>
+            {% else %}
+            <span style="color:gray;">[미달성]</span>
+            {% endif %}
+            <p>{{ achievement.description }}</p>
+        </li>
+        {% empty %}
+        <li>업적이 없습니다.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'stat_view' %}">스탯 보기</a>
+    {% endblock %}
+
+
+</body>
+</html>
+
+rpg/templates/rpg/stat_view.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>stat_view</title>
+</head>
+<body>
+
+    {% extends "base.html" %}
+    {% block content %}
+    <h2>나의 스탯</h2>
+    <ul>
+        <li>레벨: {{ stat.level }}</li>
+        <li>경험치: {{ stat.exp }}</li>
+        <li>공부: {{ stat.study }}</li>
+        <li>운동: {{ stat.exercise }}</li>
+        <li>체력: {{ stat.stamina }}</li>
+        <li>외모: {{ stat.appearance }}</li>
+        <li>재력: {{ stat.wealth }}</li>
+    </ul>
+    <a href="{% url 'achievement_list' %}">업적/칭호 보기</a>
+    {% endblock %}
+
+
+</body>
+</html>
+
+todolist/templates/todolist/todo_form.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>todo_form</title>
+</head>
+<body>
+
+    {% extends "base.html" %}
+    {% block content %}
+    <h2>할 일 추가</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">저장</button>
+    </form>
+    <a href="{% url 'todo_list' %}">목록으로 돌아가기</a>
+    {% endblock %}
+
+
+</body>
+</html>
+todolist/templates/todolist/todo_list.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>doto_list</title>
+</head>
+<body>
+
+    {% extends "base.html" %}
+    {% block content %}
+    <h2>나의 할 일 목록</h2>
+    <a href="{% url 'todo_create' %}">새 할 일 추가</a>
+    <ul>
+        {% for todo in todos %}
+        <li>
+            <strong>{{ todo.title }}</strong>
+            {% if todo.completed %}
+            <span style="color:green;">[완료]</span>
+            {% else %}
+            <a href="{% url 'todo_complete' todo.pk %}">완료</a>
+            {% endif %}
+            <a href="{% url 'todo_delete' todo.pk %}">삭제</a>
+            <br>
+            <small>{{ todo.category }} | {{ todo.due|date:"Y-m-d H:i" }}</small>
+            <p>{{ todo.description }}</p>
+        </li>
+        {% empty %}
+        <li>할 일이 없습니다.</li>
+        {% endfor %}
+    </ul>
+    {% endblock %}
+
+
+</body>
+</html>
+todolist/templates/base.html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RPG TodoList{% endblock %}</title>
+    <style>
+        body { font-family: 'Noto Sans KR', Arial, sans-serif; margin: 0; padding: 0; background: #f7f7f7; }
+        header { background: #4a90e2; color: #fff; padding: 1rem; }
+        nav { margin-bottom: 1rem; }
+        nav a { color: #fff; margin-right: 1rem; text-decoration: none; }
+        main { max-width: 700px; margin: 2rem auto; background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);}
+        footer { text-align: center; color: #999; padding: 1rem; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>RPG TodoList</h1>
+        <nav>
+            <a href="{% url 'todo_list' %}">할 일 목록</a>
+            <a href="{% url 'stat_view' %}">내 스탯</a>
+            <a href="{% url 'achievement_list' %}">업적/칭호</a>
+            {% if user.is_authenticated %}
+                <span>{{ user.username }} 님</span>
+                <a href="{% url 'logout' %}">로그아웃</a>
+            {% else %}
+                <a href="{% url 'login' %}">로그인</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        <!-- 각 페이지의 내용이 들어갑니다 -->
+        {% endblock %}
+    </main>
+    <footer>
+        &copy; 2025 RPG TodoList
+    </footer>
+</body>
+</html>
+
+todolist/templates/login.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block content %}
+    <h2>로그인</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">로그인</button>
+    </form>
+    {% endblock %}
+
+</body>
+</html>
+todolist/forms.py
+from django import forms
+from .models import Todo
+
+class TodoForm(forms.ModelForm):
+    class Meta:
+        model = Todo
+        fields = ['title', 'description', 'category', 'due']
+
+todolist/model.py
+from django.db import models
+from django.contrib.auth.models import User
+
+class Todo(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=120)
+    description = models.TextField(blank=True)
+    category = models.CharField(max_length=50)
+    due = models.DateTimeField(null=True, blank=True)
+    completed = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+todolist/urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.todo_list, name='todo_list'),
+    path('create/', views.todo_create, name='todo_create'),
+    path('complete/<int:pk>/', views.todo_complete, name='todo_complete'),
+    path('delete/<int:pk>/', views.todo_delete, name='todo_delete'),
+
+]
+
+from django.contrib import admin
+from django.urls import path, include
+from django.contrib.auth import views as auth_views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('todo/', include('todolist.urls')),
+    path('rpg/', include('rpg.urls')),
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+]
+
+
+todolist/views.py
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Todo
+from django.contrib.auth.decorators import login_required
+from .forms import TodoForm
+
+@login_required
+def todo_list(request):
+    todos = Todo.objects.filter(user=request.user).order_by('-created')
+    return render(request, 'todolist/todo_list.html', {'todos': todos})
+
+@login_required
+def todo_create(request):
+    if request.method == 'POST':
+        form = TodoForm(request.POST)
+        if form.is_valid():
+            todo = form.save(commit=False)
+            todo.user = request.user
+            todo.save()
+            return redirect('todo_list')
+    else:
+        form = TodoForm()
+    return render(request, 'todolist/todo_form.html', {'form': form})
+
+@login_required
+def todo_complete(request, pk):
+    todo = get_object_or_404(Todo, pk=pk, user=request.user)
+    todo.completed = True
+    todo.save()
+    return redirect('todo_list')
+
+@login_required
+def todo_delete(request, pk):
+    todo = get_object_or_404(Todo, pk=pk, user=request.user)
+    todo.delete()
+    return redirect('todo_list')
+
+
+
+todolist_rpg/urls.py
+"""
+URL configuration for todolist_rpg project.
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/5.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('todo/', include('todolist.urls')),
+    path('rpg/', include('rpg.urls')),
+]
+

@@ -1,0 +1,16 @@
+
+    {% extends "base.html" %}
+    {% block content %}
+    <h2>나의 스탯</h2>
+    <ul>
+        <li>레벨: {{ stat.level }}</li>
+        <li>경험치: {{ stat.exp }}</li>
+        <li>공부: {{ stat.study }}</li>
+        <li>운동: {{ stat.exercise }}</li>
+        <li>체력: {{ stat.stamina }}</li>
+        <li>외모: {{ stat.appearance }}</li>
+        <li>재력: {{ stat.wealth }}</li>
+    </ul>
+    <a href="{% url 'achievement_list' %}">업적/칭호 보기</a>
+    {% endblock %}
+

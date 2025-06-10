@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RPG TodoList{% endblock %}</title>
+    <style>
+        body { font-family: 'Noto Sans KR', Arial, sans-serif; margin: 0; padding: 0; background: #f7f7f7; }
+        header { background: #4a90e2; color: #fff; padding: 1rem; }
+        nav { margin-bottom: 1rem; }
+        nav a { color: #fff; margin-right: 1rem; text-decoration: none; }
+        main { max-width: 700px; margin: 2rem auto; background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);}
+        footer { text-align: center; color: #999; padding: 1rem; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>RPG TodoList</h1>
+        <nav>
+            <a href="{% url 'todo_list' %}">할 일 목록</a>
+            <a href="{% url 'stat_view' %}">내 스탯</a>
+            <a href="{% url 'achievement_list' %}">업적/칭호</a>
+            {% if user.is_authenticated %}
+                <span>{{ user.username }} 님</span>
+                <a href="{% url 'logout' %}">로그아웃</a>
+            {% else %}
+                <a href="{% url 'login' %}">로그인</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        <!-- 각 페이지의 내용이 들어갑니다 -->
+        {% endblock %}
+    </main>
+    <footer>
+        &copy; 2025 RPG TodoList
+    </footer>
+</body>
+</html>
