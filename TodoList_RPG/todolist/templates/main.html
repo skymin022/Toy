@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>RPG TodoList 메인</h2>
+<p>환영합니다, <strong>{{ user.username }}</strong> 님!</p>
+
+<div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+  <div style="flex:1; min-width:220px; background:#e6f0fa; padding:1rem; border-radius:8px;">
+    <h3>할 일 관리</h3>
+    <p>오늘의 할 일을 확인하고 추가하세요.</p>
+    <a href="{% url 'todo_list' %}">할 일 목록 바로가기</a>
+  </div>
+  <div style="flex:1; min-width:220px; background:#f7e6fa; padding:1rem; border-radius:8px;">
+    <h3>내 스탯</h3>
+    <p>경험치와 스탯, 레벨을 확인하세요.</p>
+    <a href="{% url 'stat_view' %}">스탯 보기</a>
+  </div>
+  <div style="flex:1; min-width:220px; background:#e6fae6; padding:1rem; border-radius:8px;">
+    <h3>업적/칭호</h3>
+    <p>달성한 업적과 칭호를 확인하세요.</p>
+    <a href="{% url 'achievement_list' %}">업적/칭호 보기</a>
+  </div>
+</div>
+{% endblock %}
