@@ -16,9 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
+from todolist.views import main_view
 
 urlpatterns = [
+    path('', main_view, name='main'),  # 루트 경로에 메인화면 연결
     path('admin/', admin.site.urls),
-    path('todo/', include('todolist.urls')),
-    path('rpg/', include('rpg.urls')),
+    path('todo/', include('todolist.urls')),  # 앱 todolist의 urls.py
+    path('rpg/', include('rpg.urls')),        # 앱 rpg의 urls.py
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
 ]
+

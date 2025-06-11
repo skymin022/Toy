@@ -33,3 +33,7 @@ def todo_delete(request, pk):
     todo = get_object_or_404(Todo, pk=pk, user=request.user)
     todo.delete()
     return redirect('todo_list')
+
+@login_required
+def main_view(request):
+    return render(request, 'main.html')

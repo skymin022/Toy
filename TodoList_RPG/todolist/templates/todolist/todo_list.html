@@ -1,24 +1,23 @@
-
-    {% extends "base.html" %}
-    {% block content %}
-    <h2>나의 할 일 목록</h2>
-    <a href="{% url 'todo_create' %}">새 할 일 추가</a>
-    <ul>
-        {% for todo in todos %}
-        <li>
-            <strong>{{ todo.title }}</strong>
-            {% if todo.completed %}
-            <span style="color:green;">[완료]</span>
-            {% else %}
-            <a href="{% url 'todo_complete' todo.pk %}">완료</a>
-            {% endif %}
-            <a href="{% url 'todo_delete' todo.pk %}">삭제</a>
-            <br>
-            <small>{{ todo.category }} | {{ todo.due|date:"Y-m-d H:i" }}</small>
-            <p>{{ todo.description }}</p>
-        </li>
-        {% empty %}
-        <li>할 일이 없습니다.</li>
-        {% endfor %}
-    </ul>
-    {% endblock %}
+{% extends "base.html" %}
+{% block content %}
+<h2>나의 할 일 목록</h2>
+<a href="{% url 'todo_create' %}">새 할 일 추가</a>
+<ul>
+    {% for todo in todos %}
+    <li>
+        <strong>{{ todo.title }}</strong>
+        {% if todo.completed %}
+        <span style="color:green;">[완료]</span>
+        {% else %}
+        <a href="{% url 'todo_complete' todo.pk %}">완료</a>
+        {% endif %}
+        <a href="{% url 'todo_delete' todo.pk %}">삭제</a>
+        <br>
+        <small>{{ todo.category }} | {{ todo.due|date:"Y-m-d H:i" }}</small>
+        <p>{{ todo.description }}</p>
+    </li>
+    {% empty %}
+    <li>할 일이 없습니다.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

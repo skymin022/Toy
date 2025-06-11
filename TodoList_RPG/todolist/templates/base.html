@@ -17,6 +17,7 @@
     <header>
         <h1>RPG TodoList</h1>
         <nav>
+            <a href="{% url 'main' %}">메인</a>
             <a href="{% url 'todo_list' %}">할 일 목록</a>
             <a href="{% url 'stat_view' %}">내 스탯</a>
             <a href="{% url 'achievement_list' %}">업적/칭호</a>
@@ -27,6 +28,7 @@
                 <a href="{% url 'login' %}">로그인</a>
             {% endif %}
         </nav>
+
     </header>
     <main>
         {% block content %}
