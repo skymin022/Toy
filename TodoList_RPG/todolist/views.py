@@ -14,12 +14,15 @@ def todo_create(request):
         form = TodoForm(request.POST)
         if form.is_valid():
             todo = form.save(commit=False)
+            # 소분류 category 필드 할당
+            todo.category = form.cleaned_data['category']
             todo.user = request.user
             todo.save()
             return redirect('todo_list')
     else:
         form = TodoForm()
     return render(request, 'todolist/todo_form.html', {'form': form})
+
 
 @login_required
 def todo_complete(request, pk):
@@ -37,3 +40,4 @@ def todo_delete(request, pk):
 @login_required
 def main_view(request):
     return render(request, 'main.html')
+

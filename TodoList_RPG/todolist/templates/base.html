@@ -23,10 +23,14 @@
             <a href="{% url 'achievement_list' %}">업적/칭호</a>
             {% if user.is_authenticated %}
                 <span>{{ user.username }} 님</span>
-                <a href="{% url 'logout' %}">로그아웃</a>
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background:none;border:none;color:#fff;cursor:pointer;">로그아웃</button>
+                </form>
             {% else %}
                 <a href="{% url 'login' %}">로그인</a>
             {% endif %}
+
         </nav>
 
     </header>

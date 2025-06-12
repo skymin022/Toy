@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>카테고리 추가</h2>
+<form method="post" id="category-form">
+    {% csrf_token %}
+    <p>{{ form.name.label }}: {{ form.name }}</p>
+    <p>{{ form.level.label }}: {{ form.level }}</p>
+    <p>
+        대분류:
+        <select id="large-category" name="large-category">
+            <option value="">선택</option>
+            {% for cat in large_categories %}
+                <option value="{{ cat.id }}">{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+    </p>
+    <p>
+        중분류:
+        <select id="middle-category" name="middle-category" disabled>
+            <option value="">선택</option>
+        </select>
+    </p>
+    <p>
+        소분류:
+        <select id="small-category" name="parent" disabled>
+            <option value="">선택</option>
+        </select>
+    </p>
+    <button type="submit">추가</button>
+</form>
+
+<script>
+document.getElementById('large-category').addEventListener('change', function() {
+    let largeId = this.value;
+    let middleSelect = document.getElementById('middle-category');
+    let smallSelect = document.getElementById('small-category');
+    middleSelect.innerHTML = '<option value="">선택</option>';
+    smallSelect.innerHTML = '<option value="">선택</option>';
+    smallSelect.disabled = true;
+    if (largeId) {
+        fetch(`/rpg/get-children-categories/?parent_id=${largeId}&level=2`)
+            .then(response => response.json())
+            .then(data => {
+                data.categories.forEach(function(cat) {
+                    let opt = document.createElement('option');
+                    opt.value = cat.id;
+                    opt.text = cat.name;
+                    middleSelect.appendChild(opt);
+                });
+                middleSelect.disabled = false;
+            });
+    } else {
+        middleSelect.disabled = true;
+    }
+});
+
+document.getElementById('middle-category').addEventListener('change', function() {
+    let middleId = this.value;
+    let smallSelect = document.getElementById('small-category');
+    smallSelect.innerHTML = '<option value="">선택</option>';
+    if (middleId) {
+        fetch(`/rpg/get-children-categories/?parent_id=${middleId}&level=3`)
+            .then(response => response.json())
+            .then(data => {
+                data.categories.forEach(function(cat) {
+                    let opt = document.createElement('option');
+                    opt.value = cat.id;
+                    opt.text = cat.name;
+                    smallSelect.appendChild(opt);
+                });
+                smallSelect.disabled = false;
+            });
+    } else {
+        smallSelect.disabled = true;
+    }
+});
+</script>
+{% endblock %}

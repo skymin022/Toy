@@ -3,7 +3,12 @@
 <h2>할 일 추가</h2>
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    <p>{{ form.title.label }}: {{ form.title }}</p>
+    <p>{{ form.description.label }}: {{ form.description }}</p>
+    <p>{{ form.due.label }}: {{ form.due }}</p>
+    <p>{{ form.category_large.label }}: {{ form.category_large }}</p>
+    <p>{{ form.category_middle.label }}: {{ form.category_middle }}</p>
+    <p>{{ form.category_small.label }}: {{ form.category_small }}</p>
     <button type="submit">저장</button>
 </form>
 <a href="{% url 'todo_list' %}">목록으로 돌아가기</a>

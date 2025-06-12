@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>카테고리 목록(대분류)</h2>
+<ul>
+    {% for cat in categories %}
+    <li>{{ cat.name }}
+        <ul>
+        {% for child in cat.children.all %}
+            <li>{{ child.name }}
+                <ul>
+                {% for sub in child.children.all %}
+                    <li>{{ sub.name }}</li>
+                {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+        </ul>
+    </li>
+    {% endfor %}
+</ul>
+<a href="{% url 'category_create' %}">카테고리 추가</a>
+{% endblock %}
