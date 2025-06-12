@@ -3,6 +3,8 @@ from .forms import CategoryForm
 from .models import Achievement, Category, Stat, UserCategoryStat
 from django.contrib.auth.decorators import login_required
 from django.db import models
+from django.http import JsonResponse
+
 
 
 @login_required

@@ -5,6 +5,7 @@
     {% csrf_token %}
     <p>{{ form.name.label }}: {{ form.name }}</p>
     <p>{{ form.level.label }}: {{ form.level }}</p>
+    <p>{{ form.parent.label }}: {{ form.parent }}</p>
     <p>
         대분류:
         <select id="large-category" name="large-category">
