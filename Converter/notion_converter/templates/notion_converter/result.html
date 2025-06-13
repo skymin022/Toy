@@ -1,0 +1,31 @@
+{% extends "converter/base.html" %}
+{% block title %}메인 | Converter{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Tistory 업로드 결과</h4>
+                </div>
+                <div class="card-body">
+                    {% if success %}
+                        <div class="alert alert-success">
+                            Tistory 블로그에 성공적으로 업로드되었습니다.<br>
+                            <a href="{{ success }}" target="_blank" class="btn btn-success mt-2">블로그 글 보기</a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger">
+                            업로드 실패<br>
+                            {% if error %}
+                                <div>{{ error }}</div>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'notion_converter:upload' %}" class="btn btn-secondary">돌아가기</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

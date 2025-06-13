@@ -1,0 +1,23 @@
+<!-- converter/templates/converter/main.html -->
+{% extends "converter/base.html" %}
+{% block title %}메인 | Converter{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">파일 변환 메인</h4>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-3">
+                    <a href="{% url 'folder_to_txt:index' %}" class="btn btn-outline-success btn-lg">폴더 → TXT 변환</a>
+                    <a href="{% url 'image_to_text:index' %}" class="btn btn-outline-info btn-lg">이미지 → TXT 변환</a>
+                    <a href="{% url 'pdf_to_txt:index' %}" class="btn btn-outline-warning btn-lg">PDF → TXT 변환</a>
+                    <a href="{% url 'screen_to_txt:index' %}" class="btn btn-outline-secondary btn-lg">스크린 → TXT 변환</a>
+                    <a href="{% url 'notion_converter:index' %}" class="btn btn-outline-secondary btn-lg">notion → 기타 변환</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

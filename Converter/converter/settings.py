@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'image_to_text',
     'pdf_to_txt',
     'screen_to_txt',
+    'notion_converter',
 ]
 
 MIDDLEWARE = [
@@ -58,7 +59,7 @@ ROOT_URLCONF = 'converter.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'converter' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

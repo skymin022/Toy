@@ -1,0 +1,75 @@
+<!-- converter/templates/converter/main.html -->
+{% extends "converter/base.html" %}
+{% block title %}메인 | Converter{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Notion 페이지 변환</h4>
+                </div>
+                <div class="card-body">
+                    {% if error %}
+                        <div class="alert alert-danger">{{ error }}</div>
+                    {% endif %}
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ url_form.as_p }}
+                        {{ format_form.as_p }}
+                        <button type="submit" class="btn btn-primary w-100">변환하기</button>
+                    </form>
+                </div>
+            </div>
+            {% if html_preview %}
+                <div class="card shadow mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">변환 결과 미리보기 (HTML)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div style="max-height:400px; overflow:auto; background:#f8f9fa; padding:1em; border:1px solid #eee;">
+                            {{ html_preview|safe }}
+                        </div>
+                        <form method="post" action="{% url 'notion_converter:convert' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="notion_url" value="{{ url_form.data.notion_url }}">
+                            <input type="hidden" name="format" value="html">
+                            <button type="submit" class="btn btn-success mt-3">HTML 파일로 저장</button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if converted_file %}
+                <div class="alert alert-success mt-4">
+                    변환이 완료되었습니다. 아래에서 파일을 다운로드하세요.
+                </div>
+                <a href="{{ converted_file.url }}" class="btn btn-outline-primary">파일 다운로드</a>
+                <form method="post" action="{% url 'notion_converter:tistory' %}" class="mt-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="html_content" value="{{ html_preview|escape }}">
+                    <button type="submit" class="btn btn-warning">Tistory 블로그로 업로드</button>
+                </form>
+            {% endif %}
+
+            {% if history %}
+                <div class="card shadow mt-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h6 class="mb-0">최근 변환 내역</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% for h in history %}
+                                <li class="list-group-item">
+                                    <strong>{{ h.url }}</strong> → <span class="badge bg-info">{{ h.format }}</span>
+                                    <div style="font-size:0.9em; color:#888;">{{ h.preview|truncatechars:120 }}</div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

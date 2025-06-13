@@ -16,12 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from . import views  # converter/views.py 에 main 뷰 추가
 
 urlpatterns = [
+    path('', views.main, name='main'),
     path('admin/', admin.site.urls),
     path('folder_to_txt/', include('folder_to_txt.urls')),
     path('image_to_text/', include('image_to_text.urls')),
     path('pdf_to_txt/', include('pdf_to_txt.urls')),
     path('screen_to_txt/', include('screen_to_txt.urls')),
+    path('notion_converter/', include('notion_converter.urls')),
 
 ]
