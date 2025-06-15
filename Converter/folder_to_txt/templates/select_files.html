@@ -10,7 +10,7 @@
                     <h5 class="mb-0">파일 선택 후 TXT로 저장</h5>
                 </div>
                 <div class="card-body">
-                    <form method="post" action="{% url 'save_txt' %}">
+                    <form method="post" action="{% url 'folder_to_txt:save_txt' %}">
                         {% csrf_token %}
 
                         <!-- 검색창 및 포함/제외 토글 -->

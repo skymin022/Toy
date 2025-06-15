@@ -42,8 +42,9 @@ def index(request):
             file_tree = get_file_tree(temp_dir)
             request.session['temp_dir'] = temp_dir
             request.session['file_tree'] = file_tree
-            return redirect('select_files')
+            return redirect('folder_to_txt:select_files')  # 네임스페이스 포함!
     return render(request, 'upload.html')
+
 
 def select_files(request):
     file_tree = request.session.get('file_tree', [])
