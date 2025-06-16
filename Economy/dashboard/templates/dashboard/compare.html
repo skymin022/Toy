@@ -1,0 +1,26 @@
+<canvas id="compareChart"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const data = {{ data|safe }};
+const ctx = document.getElementById('compareChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: data.kr.labels,
+        datasets: [
+            {
+                label: '{{ kr_code }} (국내)',
+                data: data.kr.close,
+                borderColor: 'blue',
+                fill: false,
+            },
+            {
+                label: '{{ global_symbol }} (해외)',
+                data: data.global.close,
+                borderColor: 'green',
+                fill: false,
+            }
+        ]
+    }
+});
+</script>
