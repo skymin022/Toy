@@ -1,0 +1,19 @@
+<h2>국내 주식 등록 목록</h2>
+<table border="1">
+    <tr>
+        <th>종목코드</th>
+        <th>종목명</th>
+        <th>가장 최근 날짜</th>
+        <th>차트 보기</th>
+    </tr>
+    {% for stock in stocks %}
+    <tr>
+        <td>{{ stock.code }}</td>
+        <td>{{ stock.name }}</td>
+        <td>{{ stock.date }}</td>
+        <td>
+            <a href="{% url 'stock_kr_chart' code=stock.code %}">차트</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>

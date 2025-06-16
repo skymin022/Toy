@@ -14,7 +14,7 @@
                     <li><strong>{{ err.file }}</strong>: {{ err.error }}</li>
                 {% endfor %}
             </ul>
-            <form method="post" action="{% url 'save_txt' %}">
+            <form method="post" action="{% url 'folder_to_txt:save_txt' %}">
                 {% csrf_token %}
                 {% for f in selected_files %}
                     <input type="hidden" name="selected_files" value="{{ f }}">
@@ -23,7 +23,7 @@
                     <input type="hidden" name="exclude_files" value="{{ err.file }}">
                 {% endfor %}
                 <button type="submit" class="btn btn-danger">오류 파일 제외하고 저장</button>
-                <a href="{% url 'select_files' %}" class="btn btn-secondary">취소</a>
+                <a href="{% url 'folder_to_txt:select_files' %}" class="btn btn-secondary">취소</a>
             </form>
         </div>
     </div>

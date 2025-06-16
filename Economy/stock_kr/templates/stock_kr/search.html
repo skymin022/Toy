@@ -1,0 +1,13 @@
+<h2>국내 주식 데이터 검색</h2>
+<form method="get" action="{% url 'stock_kr_chart' %}">
+    <label for="keyword">종목명(키워드):</label>
+    <input type="text" id="keyword" name="keyword" placeholder="예: 삼성전자" required>
+
+    <label for="start">시작일:</label>
+    <input type="date" id="start" name="start" required>
+
+    <label for="end">마지막일:</label>
+    <input type="date" id="end" name="end" required>
+
+    <button type="submit">검색</button>
+</form>
