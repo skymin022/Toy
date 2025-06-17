@@ -1,0 +1,7 @@
+Django>=3.2
+youtubesearchpython
+pytube
+librosa
+numpy
+scipy
+keras

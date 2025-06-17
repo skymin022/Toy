@@ -1,0 +1,12 @@
+<h3>검색 결과</h3>
+<form method="post" action="{% url 'select' %}">
+  {% csrf_token %}
+  {% for video in video_list %}
+    <div>
+      <input type="radio" name="video_url" value="{{ video.url }}" required>
+      <img src="{{ video.thumbnails }}" width="120">
+      <b>{{ video.title }}</b> ({{ video.duration }})
+    </div>
+  {% endfor %}
+  <button type="submit">선택한 영상 음원 추출</button>
+</form>
