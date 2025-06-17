@@ -1,2 +1,39 @@
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.log
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+.env
+
+# IDE/Editor
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter/IPython
+.ipynb_checkpoints/
+
+# 기타
+*.midi
+*.mid
+*.wav
+*.mp3
+*.h5
+*.pth
+*.npz
+*.npy

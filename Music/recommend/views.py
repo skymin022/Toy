@@ -2,8 +2,12 @@ from django.shortcuts import render, redirect
 from youtubesearchpython import VideosSearch
 from pytube import YouTube
 import os
+from recommend.utils.audio_processing import audio_to_midi, midi_to_model_input
+from recommend.utils.embedding import extract_embedding
+from recommend.utils.recommend import get_all_embeddings, recommend_similar_music
 
-# 1. 키워드로 유튜브 영상 검색
+MEDIA_ROOT = 'media'
+
 def search_view(request):
     if request.method == 'POST':
         keyword = request.POST.get('keyword')
@@ -19,30 +23,42 @@ def search_view(request):
         return render(request, 'recommend/select.html', {'video_list': video_list})
     return render(request, 'recommend/search.html')
 
-# 2. 영상 선택 → 음원 추출
 def select_view(request):
     if request.method == 'POST':
         video_url = request.POST.get('video_url')
-        # 음원 추출
-        audio_path = download_audio_from_youtube(video_url)
-        # 전처리 (예시)
-        input_tensor = preprocess_audio(audio_path)
-        # 이후 추천 파이프라인 연결 (여기서는 결과만 출력)
-        return render(request, 'recommend/result.html', {'audio_path': audio_path})
+        try:
+            audio_path = download_audio_from_youtube(video_url)
+            midi_path = audio_to_midi(audio_path)
+            midi_input = midi_to_model_input(midi_path)
+            input_embedding = extract_embedding(midi_input)
+            db_embeddings = get_all_embeddings()
+            recommendations = recommend_similar_music(input_embedding, db_embeddings)
+            # 파일 정리 (보안/용량 관리)
+            safe_remove(audio_path)
+            safe_remove(midi_path)
+            return render(request, 'recommend/result.html', {'recommendations': recommendations})
+        except Exception as e:
+            return render(request, 'recommend/result.html', {'error': str(e)})
     return redirect('search')
 
-# 3. 결과 페이지 (추후 추천 결과 등 표시)
-def result_view(request):
-    return render(request, 'recommend/result.html')
-
-# --- 유틸 함수 ---
-
-def download_audio_from_youtube(url, output_path='media', filename='input.mp3'):
+def download_audio_from_youtube(url, output_path=MEDIA_ROOT, filename='input.mp3'):
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     yt = YouTube(url)
-    yt.streams.filter(only_audio=True).first().download(output_path=output_path, filename=filename)
-    return os.path.join(output_path, filename)
+    stream = yt.streams.filter(only_audio=True).first()
+    if not stream:
+        raise Exception('오디오 스트림을 찾을 수 없습니다.')
+    file_path = os.path.join(output_path, filename)
+    stream.download(output_path=output_path, filename=filename)
+    return file_path
+
+def safe_remove(path):
+    try:
+        if os.path.exists(path):
+            os.remove(path)
+    except Exception:
+        pass
+
 
 import librosa
 import numpy as np

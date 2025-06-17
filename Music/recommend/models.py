@@ -1,13 +1,12 @@
-from keras.models import Sequential
-from keras.layers import LSTM, Conv1D, Dense, Flatten, Reshape, InputLayer
+from django.db import models
 
-def generator_model(input_shape=(100, 1)):
-    model = Sequential()
-    model.add(InputLayer(input_shape=input_shape))
-    model.add(Conv1D(64, kernel_size=3, activation='relu', padding='same'))
-    model.add(LSTM(128, return_sequences=True))
-    model.add(Flatten())
-    model.add(Dense(256, activation='relu'))
-    model.add(Dense(100 * 2, activation='sigmoid'))
-    model.add(Reshape((100, 2)))
-    return model
+
+# DB 모델 관리
+class Music(models.Model):
+    title = models.CharField(max_length=200)
+    artist = models.CharField(max_length=100)
+    # 기타 메타데이터 필드
+
+class MusicEmbedding(models.Model):
+    music = models.OneToOneField(Music, on_delete=models.CASCADE)
+    embedding = models.BinaryField()  # numpy array bytes로 저장
