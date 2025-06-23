@@ -5,6 +5,45 @@ import shutil
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
+
+# 트리 구조 생성 함수
+def build_tree(paths):
+    tree = lambda: defaultdict(tree)
+    root = tree()
+    for path in paths:
+        parts = path.split(os.sep)
+        cur = root
+        for part in parts:
+            cur = cur[part]
+    return root
+
+def tree_to_str(d, prefix=''):
+    lines = []
+    keys = sorted(d)
+    for i, key in enumerate(keys):
+        connector = '└── ' if i == len(keys) - 1 else '├── '
+        lines.append(prefix + connector + key)
+        if d[key]:
+            extension = '    ' if i == len(keys) - 1 else '│   '
+            lines.extend(tree_to_str(d[key], prefix + extension))
+    return lines
+
+def extract_zip(file):
+    temp_dir = tempfile.mkdtemp()
+    with zipfile.ZipFile(file, 'r') as zip_ref:
+        zip_ref.extractall(temp_dir)
+    return temp_dir
+
+def get_file_tree(root):
+    tree = []
+    for dirpath, _, filenames in os.walk(root):
+        for f in filenames:
+            rel = os.path.relpath(os.path.join(dirpath, f), root)
+            tree.append(rel)
+    return tree
+
+
+
 def extract_zip(file):
     temp_dir = tempfile.mkdtemp()
     with zipfile.ZipFile(file, 'r') as zip_ref:
@@ -62,7 +101,7 @@ def save_txt(request):
 
     errors = []
     file_contents = []
-    readable_files = set()  # 정상적으로 읽힌 파일만 저장
+    readable_files = set()
 
     for f in sorted(selected):
         try:
@@ -73,32 +112,30 @@ def save_txt(request):
         except Exception as e:
             errors.append({'file': f, 'error': str(e)})
 
-    # 오류 발생 시 안내 페이지로 이동
     if errors and not exclude:
         return render(request, 'error_files.html', {
             'errors': errors,
             'selected_files': selected,
         })
 
-    # 오류가 없거나, 오류 파일 제외 후 저장
     response = HttpResponse(content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename="selected_files.txt"'
     response.write("폴더 구조:\n")
-    # 폴더 구조에는 정상적으로 읽힌 파일만 기록
-    for f in sorted(file_tree):
-        if f in readable_files:
-            response.write(f + '\n')
+
+    # 트리 구조 생성 및 출력 (정상적으로 읽힌 파일만)
+    filtered_tree = build_tree([f for f in file_tree if f in readable_files])
+    tree_lines = tree_to_str(filtered_tree)
+    for line in tree_lines:
+        response.write(line + '\n')
+
     response.write('\n\n')
     for f, content in file_contents:
         response.write(f"--- {f} ---\n")
         response.write(content + '\n\n')
 
-    # 필요시 임시 폴더 정리 (다운로드 후)
-    # 파일 반환 직전 추가
     if temp_dir:
         shutil.rmtree(temp_dir, ignore_errors=True)
         request.session.pop('temp_dir', None)
         request.session.pop('file_tree', None)
-
 
     return response

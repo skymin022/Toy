@@ -1,5 +1,8 @@
 {% extends "converter/base.html" %}
+{% load tree_tags %} {# 이 줄을 추가합니다. #}
+
 {% block title %}파일 선택{% endblock %}
+
 {% block content %}
 <body class="bg-light">
 <div class="container py-5">
@@ -29,13 +32,15 @@
                         </div>
 
                         <!-- 파일 리스트 -->
+                        {# 이 부분을 트리 구조 렌더링으로 변경합니다. #}
                         <div class="mb-3 file-list" id="fileList">
-                            {% for f in file_tree %}
-                                <div class="form-check file-item">
-                                    <input class="form-check-input" type="checkbox" name="selected_files" value="{{ f }}" id="file{{ forloop.counter }}">
-                                    <label class="form-check-label" for="file{{ forloop.counter }}">{{ f }}</label>
-                                </div>
-                            {% endfor %}
+                            {% comment %}
+                                기존 {% for f in file_tree %} ... {% endfor %} 부분을 대체합니다.
+                                file_tree는 views.py에서 전달되는 파일 경로 리스트입니다.
+                                tree_tags.py에 정의된 'filetree' 필터를 이용해 이 리스트를 트리 구조로 변환합니다.
+                                그리고 'tree_file_list.html' 템플릿을 재귀적으로 포함하여 트리를 렌더링합니다.
+                            {% endcomment %}
+                            {% include "tree_file_list.html" with tree=file_tree|filetree prefix="" %}
                         </div>
                         <button type="submit" class="btn btn-success w-100">선택한 파일 TXT로 저장</button>
                     </form>
@@ -46,31 +51,38 @@
 </div>
 
 <script>
+    // JavaScript 수정: 트리 구조에 맞춰 선택 및 검색 로직 조정
+    // 체크박스는 'file-checkbox' 클래스를 가지도록 tree_file_list.html을 수정해야 합니다.
+
     // 모두 선택/해제
     document.getElementById('selectAllBtn').onclick = function() {
-        document.querySelectorAll('.file-item input[type="checkbox"]').forEach(cb => cb.checked = true);
+        document.querySelectorAll('.form-check-input.file-checkbox').forEach(cb => cb.checked = true);
     };
     document.getElementById('deselectAllBtn').onclick = function() {
-        document.querySelectorAll('.file-item input[type="checkbox"]').forEach(cb => cb.checked = false);
+        document.querySelectorAll('.form-check-input.file-checkbox').forEach(cb => cb.checked = false);
     };
 
     // 검색 및 포함/제외 토글
     function filterFiles() {
         const keyword = document.getElementById('searchInput').value.toLowerCase();
         const mode = document.getElementById('searchMode').value;
-        document.querySelectorAll('.file-item').forEach(function(item) {
+        // 모든 파일 아이템을 찾습니다. (tree_file_list.html에서 파일 아이템에 'file-item' 클래스를 부여한다고 가정)
+        document.querySelectorAll('.form-check.file-item').forEach(function(item) {
             const label = item.querySelector('label').textContent.toLowerCase();
             const isMatch = label.includes(keyword);
-            // 포함 모드: 키워드 포함된 것만 표시
-            // 제외 모드: 키워드 포함된 것만 숨김
+
             if (keyword === "") {
-                item.style.display = '';
+                item.style.display = ''; // 검색어가 없으면 모두 표시
             } else if (mode === "include") {
-                item.style.display = isMatch ? '' : 'none';
-            } else {
-                item.style.display = isMatch ? 'none' : '';
+                item.style.display = isMatch ? '' : 'none'; // 포함 모드: 일치하면 표시, 아니면 숨김
+            } else { // mode === "exclude"
+                item.style.display = isMatch ? 'none' : ''; // 제외 모드: 일치하면 숨김, 아니면 표시
             }
         });
+
+        // 폴더 노드의 표시 여부 조정 (하위 파일이 모두 숨겨지면 폴더도 숨기는 로직 추가)
+        // 이 부분은 복잡도가 높으므로 간단히 파일만 필터링하는 것으로 시작하고 필요시 추가 구현합니다.
+        // 현재는 파일만 필터링되며, 빈 폴더는 그대로 보일 수 있습니다.
     }
     document.getElementById('searchInput').addEventListener('input', filterFiles);
     document.getElementById('searchMode').addEventListener('change', filterFiles);

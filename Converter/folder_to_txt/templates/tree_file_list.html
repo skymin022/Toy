@@ -1,0 +1,26 @@
+{# folder_to_txt/templates/tree_file_list.html #}
+<ul class="list-unstyled ms-2">
+    {% for key, subtree in tree.items %}
+        {# 키가 파일인지 (하위 트리가 비어있는지) 확인 #}
+        {% if subtree %}
+            {# 폴더인 경우 #}
+            <li>
+                <span class="folder-node">
+                    <strong>{{ key }}/</strong>
+                </span>
+                {# 재귀적으로 하위 트리 렌더링 #}
+                {% include "tree_file_list.html" with tree=subtree prefix=prefix|add:key|add:"/" %}
+            </li>
+        {% else %}
+            {# 파일인 경우 #}
+            <li>
+                <div class="form-check file-item"> {# file-item 클래스 추가 #}
+                    <input class="form-check-input file-checkbox" type="checkbox" name="selected_files" value="{{ prefix }}{{ key }}" id="file-{{ prefix|slugify|default_if_none:"" }}-{{ key|slugify }}"> {# file-checkbox 클래스 추가 및 id 고유화 #}
+                    <label class="form-check-label" for="file-{{ prefix|slugify|default_if_none:"" }}-{{ key|slugify }}">{{ prefix }}{{ key }}</label>
+                </div>
+            </li>
+        {% endif %}
+    {% empty %}
+        {# 비어있는 폴더 또는 트리 #}
+    {% endfor %}
+</ul>
