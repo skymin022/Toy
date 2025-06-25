@@ -1,11 +1,18 @@
 {% extends "converter/base.html" %}
-{% load tree_tags %} {# 이 줄을 추가합니다. #}
+{% load tree_tags %} 
 
 {% block title %}파일 선택{% endblock %}
 
 {% block content %}
 <body class="bg-light">
 <div class="container py-5">
+    <!-- 파일 이름 입력 필드 추가 (기본값은 selected_files.txt) -->
+    <div class="mb-3">
+        <label for="outputFileName" class="form-label">저장할 파일 이름</label>
+        <input type="text" class="form-control" id="outputFileName" name="output_file_name" value="selected_files.txt" required>
+        <div class="form-text">확장자(.txt)를 포함하여 입력하세요.</div>
+    </div>
+
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow">

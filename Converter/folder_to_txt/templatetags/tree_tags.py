@@ -7,14 +7,25 @@ from collections import defaultdict
 register = template.Library()
 
 def build_tree(paths):
-    tree = lambda: defaultdict(tree)
+    from collections import defaultdict
+
+    def tree():
+        return defaultdict(tree)
+
+    def convert(d):
+        if isinstance(d, defaultdict):
+            return {k: convert(v) for k, v in d.items()}
+        else:
+            return d
+
     root = tree()
     for path in paths:
-        parts = path.split(os.sep)
+        parts = path.split('/')
         cur = root
         for part in parts:
             cur = cur[part]
-    return root
+    return convert(root)
+
 
 @register.filter
 def filetree(value):

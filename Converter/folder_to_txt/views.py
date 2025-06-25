@@ -4,6 +4,8 @@ import tempfile
 import shutil
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from collections import defaultdict
+
 
 
 # 트리 구조 생성 함수
