@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>게시글 작성</h1>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+
+  <button type="submit">작성 완료 (승인 대기)</button>
+</form>
+
+<a href="{% url 'board_list' %}">게시판으로 돌아가기</a>
+{% endblock %}
