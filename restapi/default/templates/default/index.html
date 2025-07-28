@@ -1,0 +1,21 @@
+<!-- default/templates/default/index.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>SQL 테이블 생성 - Java 코드 자동 생성기</title>
+</head>
+<body>
+    <h1>SQL 테이블 정의 입력</h1>
+
+    <form method="post" action="{% url 'generate_code' %}">
+        {% csrf_token %}
+        <textarea name="sql" rows="15" cols="80" placeholder="CREATE TABLE 구문을 입력하세요..."></textarea><br/>
+        <button type="submit">코드 생성 및 다운로드</button>
+    </form>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+</body>
+</html>

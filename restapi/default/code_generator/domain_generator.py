@@ -1,5 +1,5 @@
 from jinja2 import Environment, FileSystemLoader
-from table_parser.utils import sql_type_to_java_type
+from ..table_parser.utils import sql_type_to_java_type
 import os
 
 def generate_domain_code(table_info: dict, template_dir: str, output_dir: str):
