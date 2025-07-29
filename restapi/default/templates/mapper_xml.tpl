@@ -11,32 +11,37 @@
 
   <insert id="insert">
     INSERT INTO {{ table_name }}(
-    id, name, seq)
+      {%- for field in fields %}
+        {{ field.name }}{% if not loop.last %}, {% endif %}
+      {%- endfor %}
+    )
     VALUES (
-    #{id}, #{name}, #{seq})
+      {%- for field in fields %}
+        #{ {{ field.name }} }{% if not loop.last %}, {% endif %}
+      {%- endfor %}
+    )
   </insert>
 
   <update id="update">
     UPDATE {{ table_name }}
     <set>
-      <if test="name != null">name = #{name},</if>
-      <if test="status != null">status = #{status},</if>
-      <if test="seq != null">seq = #{seq},</if>
+      {%- for field in fields if field.name not in ['id', 'created_at', 'no'] %}
+        <if test="{{ field.name }} != null">{{ field.name }} = #{{ '{' }}{{ field.name }}{{ '}' }},{% if not loop.last %}\n      {% endif %}</if>
+      {%- endfor %}
       updated_at = now()
     </set>
-    WHERE no = #{no}
+    WHERE {% if 'no' in fields|map(attribute='name') %}no = #{no}{% elif 'id' in fields|map(attribute='name') %}id = #{id}{% else %}-- key 지정 필요{% endif %}
   </update>
 
   <delete id="delete">
-    DELETE FROM {{ table_name }} WHERE no = #{no}
+    DELETE FROM {{ table_name }} WHERE {% if 'no' in fields|map(attribute='name') %}no = #{no}{% elif 'id' in fields|map(attribute='name') %}id = #{id}{% else %}-- key 지정 필요{% endif %}
   </delete>
 
   <update id="completeAll">
-    UPDATE {{ table_name }} SET status = true
+    UPDATE {{ table_name }} SET {% if 'status' in fields|map(attribute='name') %}status = true{% else %}-- 수정필드 없음{% endif %}
   </update>
 
   <delete id="deleteAll">
     DELETE FROM {{ table_name }}
   </delete>
-
 </mapper>

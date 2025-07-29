@@ -9,7 +9,8 @@ def generate_service_code(table_info: dict, template_dir: str, output_dir: str):
 
     rendered = template.render(
         class_name=class_name,
-        package='com.example.service'
+        package='com.example.service',
+        fields=table_info['columns']    # 이 부분을 꼭 추가하세요
     )
 
     os.makedirs(output_dir, exist_ok=True)

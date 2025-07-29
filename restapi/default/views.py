@@ -9,7 +9,9 @@ from .code_generator import (
     service_generator,
     service_impl_generator,
     xml_generator,
-    extra_generator  # 추가 import
+    extra_generator,
+    controller_generator  # 추가 import
+
 )
 import tempfile
 import zipfile
@@ -46,6 +48,10 @@ def generate_code_view(request):
         service_generator.generate_service_code(table_info, template_dir, output_dir)
         service_impl_generator.generate_service_impl_code(table_info, template_dir, output_dir)
         xml_generator.generate_mapper_xml(table_info, template_dir, output_dir)
+        # controller 추가 
+        controller_generator.generate_controller_code(table_info, template_dir, output_dir)
+        
+
 
         # 추가 코드 생성기 호출 (SwaggerConfig, Pagination, BaseMapper, BaseService, application.properties)
         extra_generator.generate_swagger_config(template_dir, output_dir)
@@ -53,6 +59,10 @@ def generate_code_view(request):
         extra_generator.generate_base_mapper(template_dir, output_dir)
         extra_generator.generate_base_service(template_dir, output_dir)
         extra_generator.generate_application_properties(template_dir, output_dir)
+        # controller 추가ㅓ
+        extra_generator.generate_home_controller(template_dir, output_dir)
+        extra_generator.generate_controller(table_info, template_dir, output_dir)
+
 
         # 생성된 파일들을 ZIP으로 묶기
         zip_path = os.path.join(tmpdir, f"{table_info['table_name']}_java_codes.zip")
