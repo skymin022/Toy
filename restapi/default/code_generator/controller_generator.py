@@ -1,4 +1,5 @@
 from jinja2 import Environment, FileSystemLoader
+from ..table_parser.utils import sql_type_to_java_type
 import os
 
 def find_id_field(columns):
@@ -11,17 +12,23 @@ def find_id_field(columns):
     for col in columns_lower:
         options = col.get('options', '')
         if options and 'primary' in options.lower():
+            col['java_type'] = sql_type_to_java_type(col['sql_type'])
             return col
     # 2. 컬럼명이 'id' 인 경우
     for col in columns_lower:
         if col['name_lower'] == 'id':
+            col['java_type'] = sql_type_to_java_type(col['sql_type'])
             return col
     # 3. 컬럼명이 'no' 인 경우
     for col in columns_lower:
         if col['name_lower'] == 'no':
+            col['java_type'] = sql_type_to_java_type(col['sql_type'])
             return col
     # 4. 없으면 첫 컬럼
-    return columns_lower[0] if columns_lower else None
+    if columns_lower:
+        columns_lower[0]['java_type'] = sql_type_to_java_type(columns_lower[0]['sql_type'])
+        return columns_lower[0]
+    return None
 
 def generate_controller_code(table_info: dict, template_dir: str, output_dir: str):
     env = Environment(loader=FileSystemLoader(template_dir))

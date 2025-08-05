@@ -10,12 +10,14 @@ def parse_create_table(sql: str) -> dict:
         'columns': []
     }
 
-    # 테이블명 추출 (백틱 포함 가능)
-    table_name_match = re.search(r"CREATE TABLE\s+`?(\w+)`?\s*\(", sql, re.IGNORECASE)
+    # 테이블명 추출 (IF NOT EXISTS 있을 경우도 포함, 백틱 포함 가능)
+    table_name_match = re.search(r"CREATE TABLE\s+(IF NOT EXISTS\s+)?`?(\w+)`?\s*\(", sql, re.IGNORECASE)
     if table_name_match:
-        table_info['table_name'] = table_name_match.group(1)
+        table_info['table_name'] = table_name_match.group(2)
     else:
         raise ValueError("테이블명을 찾을 수 없습니다.")
+
+
 
     # 컬럼 추출 (간단히 괄호 내부 줄 단위로)
     columns_str = re.search(r"\((.*)\)", sql, re.DOTALL).group(1).strip()

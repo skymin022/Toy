@@ -4,13 +4,13 @@ import java.util.List;
 import com.github.pagehelper.PageInfo;
 
 public interface BaseService<E> {
-    public List<E> list();
-    public PageInfo<E> list(int page, int size);
-    public E select(Long no);
-    public E selectById(String id);
-    public boolean insert(E entity);    
-    public boolean update(E entity);    
-    public boolean updateById(E entity);    
-    public boolean delete(Long no);    
-    public boolean deleteById(String id);
+    public List<E> list() throws Exception;
+    public PageInfo<E> list(int page, int size) throws Exception;
+    public E select(Long no) throws Exception;
+    public E selectById(String id) throws Exception;
+    public boolean insert(E entity) throws Exception;    
+    public boolean update(E entity) throws Exception;    
+    public boolean updateById(E entity) throws Exception;    
+    public boolean delete(Long no) throws Exception;    
+    public boolean deleteById(String id) throws Exception;
 }
