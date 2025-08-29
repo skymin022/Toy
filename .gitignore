@@ -37,3 +37,9 @@ Thumbs.db
 *.pth
 *.npz
 *.npy
+
+# 모델 파일 무시
+models/
+
+# gguf 모델 파일 무시
+*.gguf
